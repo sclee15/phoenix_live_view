@@ -115,6 +115,8 @@ import LiveUploader from "./live_uploader"
 import View from "./view"
 import JS from "./js"
 
+console.log('SC: altered');
+
 export default class LiveSocket {
   constructor(url, phxSocket, opts = {}){
     this.unloaded = false
@@ -127,6 +129,7 @@ export default class LiveSocket {
           let liveSocket = new LiveSocket("/live", Socket, {...})
       `)
     }
+    console.log("SC:CON");
     this.socket = new phxSocket(url, opts)
     this.bindingPrefix = opts.bindingPrefix || BINDING_PREFIX
     this.opts = opts
@@ -304,7 +307,9 @@ export default class LiveSocket {
       if(this.hasPendingLink()){
         window.location = this.pendingLink
       } else {
-        window.location.reload()
+        console.log('SC: reached');
+        view.triggerBeforeReload();
+        // window.location.reload()
       }
     }, afterMs)
   }

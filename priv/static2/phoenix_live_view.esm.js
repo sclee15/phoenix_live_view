@@ -1923,9 +1923,6 @@ var ViewHook = class {
     this.__isDisconnected = true;
     this.disconnected && this.disconnected();
   }
-  __beforeReload() {
-    this.beforeReload && this.beforeReload();
-  }
   pushEvent(event, payload = {}, onReply = function() {
   }) {
     return this.__view.pushHookEvent(null, event, payload, onReply);
@@ -2266,11 +2263,6 @@ var View = class {
   triggerReconnected() {
     for (let id in this.viewHooks) {
       this.viewHooks[id].__reconnected();
-    }
-  }
-  triggerBeforeReload() {
-    for (let id in this.viewHooks) {
-      this.viewHooks[id].__beforeReload();
     }
   }
   log(kind, msgCallback) {
@@ -3139,7 +3131,6 @@ var View = class {
 };
 
 // js/phoenix_live_view/live_socket.js
-console.log("SC: altered");
 var LiveSocket = class {
   constructor(url, phxSocket, opts = {}) {
     this.unloaded = false;
@@ -3152,7 +3143,6 @@ var LiveSocket = class {
           let liveSocket = new LiveSocket("/live", Socket, {...})
       `);
     }
-    console.log("SC:CON");
     this.socket = new phxSocket(url, opts);
     this.bindingPrefix = opts.bindingPrefix || BINDING_PREFIX;
     this.opts = opts;
@@ -3330,8 +3320,7 @@ var LiveSocket = class {
       if (this.hasPendingLink()) {
         window.location = this.pendingLink;
       } else {
-        console.log("SC: reached");
-        view.triggerBeforeReload();
+        window.location.reload();
       }
     }, afterMs);
   }

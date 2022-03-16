@@ -1,3 +1,16 @@
+var __defProp = Object.defineProperty;
+var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
+var __export = (target, all) => {
+  __markAsModule(target);
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+
+// js/phoenix_live_view/index.js
+__export(exports, {
+  LiveSocket: () => LiveSocket
+});
+
 // js/phoenix_live_view/constants.js
 var CONSECUTIVE_RELOADS = "consecutive-reloads";
 var MAX_RELOADS = 10;
@@ -1923,9 +1936,6 @@ var ViewHook = class {
     this.__isDisconnected = true;
     this.disconnected && this.disconnected();
   }
-  __beforeReload() {
-    this.beforeReload && this.beforeReload();
-  }
   pushEvent(event, payload = {}, onReply = function() {
   }) {
     return this.__view.pushHookEvent(null, event, payload, onReply);
@@ -2266,11 +2276,6 @@ var View = class {
   triggerReconnected() {
     for (let id in this.viewHooks) {
       this.viewHooks[id].__reconnected();
-    }
-  }
-  triggerBeforeReload() {
-    for (let id in this.viewHooks) {
-      this.viewHooks[id].__beforeReload();
     }
   }
   log(kind, msgCallback) {
@@ -3139,7 +3144,6 @@ var View = class {
 };
 
 // js/phoenix_live_view/live_socket.js
-console.log("SC: altered");
 var LiveSocket = class {
   constructor(url, phxSocket, opts = {}) {
     this.unloaded = false;
@@ -3152,7 +3156,6 @@ var LiveSocket = class {
           let liveSocket = new LiveSocket("/live", Socket, {...})
       `);
     }
-    console.log("SC:CON");
     this.socket = new phxSocket(url, opts);
     this.bindingPrefix = opts.bindingPrefix || BINDING_PREFIX;
     this.opts = opts;
@@ -3330,8 +3333,7 @@ var LiveSocket = class {
       if (this.hasPendingLink()) {
         window.location = this.pendingLink;
       } else {
-        console.log("SC: reached");
-        view.triggerBeforeReload();
+        window.location.reload();
       }
     }, afterMs);
   }
@@ -3856,7 +3858,4 @@ var TransitionSet = class {
     this.pendingOps = [];
   }
 };
-export {
-  LiveSocket
-};
-//# sourceMappingURL=phoenix_live_view.esm.js.map
+//# sourceMappingURL=phoenix_live_view.cjs.js.map

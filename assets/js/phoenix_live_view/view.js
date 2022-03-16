@@ -188,6 +188,10 @@ export default class View {
     for(let id in this.viewHooks){ this.viewHooks[id].__reconnected() }
   }
 
+  triggerBeforeReload(){
+    for(let id in this.viewHooks){ this.viewHooks[id].__beforeReload() }
+  }
+
   log(kind, msgCallback){
     this.liveSocket.log(this, kind, msgCallback)
   }
