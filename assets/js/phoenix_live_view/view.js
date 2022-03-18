@@ -90,6 +90,7 @@ export default class View {
     this.stopCallback = function(){ }
     this.pendingJoinOps = this.parent ? null : []
     this.viewHooks = {}
+    this.viewAfterDestoryHooks = {}
     this.uploaders = {}
     this.formSubmits = []
     this.children = this.parent ? null : {}
@@ -147,7 +148,10 @@ export default class View {
     let onFinished = () => {
       callback()
       for(let id in this.viewHooks){
-        this.destroyHook(this.viewHooks[id])
+        if (this.viewHooks[id].beforeReload){
+          this.viewAfterDestoryHooks[id] = this.viewHooks[id];
+        }
+        this.destroyHook(this.viewHooks[id]);
       }
     }
 
@@ -189,7 +193,14 @@ export default class View {
   }
 
   triggerBeforeReload(){
-    for(let id in this.viewHooks){ this.viewHooks[id].__beforeReload() }
+    var result = false;
+    for(let id in this.viewAfterDestoryHooks){
+      var probbed_return = this.viewAfterDestoryHooks[id].__beforeReload()
+      if (probbed_return){
+        result = true;
+      }
+    }
+    return result;
   }
 
   log(kind, msgCallback){

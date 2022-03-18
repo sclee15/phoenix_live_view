@@ -115,8 +115,6 @@ import LiveUploader from "./live_uploader"
 import View from "./view"
 import JS from "./js"
 
-console.log('SC: altered');
-
 export default class LiveSocket {
   constructor(url, phxSocket, opts = {}){
     this.unloaded = false
@@ -157,6 +155,7 @@ export default class LiveSocket {
     this.failsafeJitter = opts.failsafeJitter || FAILSAFE_JITTER
     this.localStorage = opts.localStorage || window.localStorage
     this.sessionStorage = opts.sessionStorage || window.sessionStorage
+    this.onBeforeReload = opts.onBeforeReload
     this.boundTopLevelEvents = false
     this.domCallbacks = Object.assign({onNodeAdded: closure(), onBeforeElUpdated: closure()}, opts.dom || {})
     this.transitions = new TransitionSet()
@@ -307,9 +306,10 @@ export default class LiveSocket {
       if(this.hasPendingLink()){
         window.location = this.pendingLink
       } else {
-        console.log('SC: reached');
-        view.triggerBeforeReload();
-        // window.location.reload()
+        var shouldStopReload = view.triggerBeforeReload();
+        if (!shouldStopReload){
+          window.location.reload()
+        }
       }
     }, afterMs)
   }
@@ -464,7 +464,8 @@ export default class LiveSocket {
     this.boundTopLevelEvents = true
     // enter failsafe reload if server has gone away intentionally, such as "disconnect" broadcast
     this.socket.onClose(event => {
-      if(event && event.code === 1000 && this.main){
+      // TODO: if(event && event.code === 1000 && this.main){
+      if(event && event.code && this.main){
         this.reloadWithJitter(this.main)
       }
     })
