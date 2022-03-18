@@ -1953,6 +1953,9 @@ within:
       this.__isDisconnected = true;
       this.disconnected && this.disconnected();
     }
+    __beforeReload() {
+      return this.beforeReload && this.beforeReload();
+    }
     pushEvent(event, payload = {}, onReply = function() {
     }) {
       return this.__view.pushHookEvent(null, event, payload, onReply);
@@ -2202,6 +2205,7 @@ within:
       };
       this.pendingJoinOps = this.parent ? null : [];
       this.viewHooks = {};
+      this.viewAfterDestoryHooks = {};
       this.uploaders = {};
       this.formSubmits = [];
       this.children = this.parent ? null : {};
@@ -2260,6 +2264,9 @@ within:
       let onFinished = () => {
         callback();
         for (let id in this.viewHooks) {
+          if (this.viewHooks[id].beforeReload) {
+            this.viewAfterDestoryHooks[id] = this.viewHooks[id];
+          }
           this.destroyHook(this.viewHooks[id]);
         }
       };
@@ -2290,6 +2297,16 @@ within:
       for (let id in this.viewHooks) {
         this.viewHooks[id].__reconnected();
       }
+    }
+    triggerBeforeReload() {
+      var result = false;
+      for (let id in this.viewAfterDestoryHooks) {
+        var probbed_return = this.viewAfterDestoryHooks[id].__beforeReload();
+        if (probbed_return) {
+          result = true;
+        }
+      }
+      return result;
     }
     log(kind, msgCallback) {
       this.liveSocket.log(this, kind, msgCallback);
@@ -3346,7 +3363,10 @@ within:
         if (this.hasPendingLink()) {
           window.location = this.pendingLink;
         } else {
-          window.location.reload();
+          var shouldStopReload = view.triggerBeforeReload();
+          if (!shouldStopReload) {
+            window.location.reload();
+          }
         }
       }, afterMs);
     }
