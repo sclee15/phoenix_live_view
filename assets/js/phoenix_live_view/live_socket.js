@@ -127,7 +127,6 @@ export default class LiveSocket {
           let liveSocket = new LiveSocket("/live", Socket, {...})
       `)
     }
-    console.log("SC:CON");
     this.socket = new phxSocket(url, opts)
     this.bindingPrefix = opts.bindingPrefix || BINDING_PREFIX
     this.opts = opts
