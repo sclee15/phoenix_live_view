@@ -463,8 +463,7 @@ export default class LiveSocket {
     this.boundTopLevelEvents = true
     // enter failsafe reload if server has gone away intentionally, such as "disconnect" broadcast
     this.socket.onClose(event => {
-      // TODO: if(event && event.code === 1000 && this.main){
-      if(event && event.code && this.main){
+      if(event && event.code === 1000 && this.main){
         this.reloadWithJitter(this.main)
       }
     })
